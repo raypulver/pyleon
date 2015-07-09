@@ -9,7 +9,7 @@ Install
 Usage
 ========================
 
-::
+```
 	from pyleon import leon
 	from pyleon import leontypes
 	
@@ -24,3 +24,4 @@ Usage
 	// u'\x05\x06\x07'
 	channel.loads(serialized) == obj
 	// True
+```
