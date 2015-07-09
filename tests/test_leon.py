@@ -1,5 +1,5 @@
-import leon
-import leontypes
+from pyleon import leon
+from pyleon import leontypes
 
 def test_object():
   obj = {'a': 1, 'b': 2}
