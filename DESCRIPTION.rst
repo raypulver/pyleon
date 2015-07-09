@@ -5,14 +5,14 @@ This is an implementation of LEON serialization for Python. The "leon" module ex
 
 Install
 ========================
-```
+``
 $ python setup.py install
-```
+``
 
 Usage
 ========================
 
-```
+`
 from pyleon import leon
 from pyleon import leontypes
 
@@ -27,4 +27,4 @@ serialized = channel.dumps(obj)
 // u'\x05\x06\x07'
 channel.loads(serialized) == obj
 // True
-```
+`
