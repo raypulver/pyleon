@@ -9,7 +9,6 @@ Install
 Usage
 ========================
 
-::
 |    from pyleon import leon
 |    from pyleon import leontypes
 |    obj = {'key': 5, 'otherkey': 6, 'thirdkey': 7}
