@@ -133,7 +133,7 @@ def bytearr(val, valtype):
     sig = int(round(sig))
     sig &= 0x7FFFFF
     ret.append(sign << 7)
-    ret[0] |= (rshift(exp & 0xFE), 1)
+    ret[0] |= rshift((exp & 0xFE), 1)
     ret.append((exp & 0x01) << 7)
     ret[1] |= (rshift(sig, 16) & 0x7F)
     ret.append(rshift(sig, 8) & 0xFF)
@@ -172,7 +172,7 @@ def bytes_to_float(bytelist):
   sign = rshift(0x80 & bytelist[0], 7)
   exp = ((bytelist[0] & 0x7F) << 1) + rshift(bytelist[1] & 0x80, 7)
   sig = 0
-  bytearr[1] &= 0x7F
+  bytelist[1] &= 0x7F
   i = 0
   while i < 3:
     sig += (bytelist[i + 1] << ((2 - i)*8))
