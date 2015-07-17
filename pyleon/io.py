@@ -2,6 +2,7 @@ from bufferiterator import BufferIterator
 from stringbuffer import StringBuffer
 from leontypes import *
 from datetime import date
+from null import Null
 import datetime
 import math
 import re
@@ -11,6 +12,7 @@ PARSED_SI = 0x01
 PARSED_OLI = 0x02
 
 reg = re.compile('^$')
+
 
 class Parser():
   def __init__(self, buf):
@@ -115,16 +117,32 @@ class Parser():
         i += 1
     elif valtype is STRING:
       return self.stringIndex[self.buffer.readValue(self.stringIndexType)]
-    elif valtype is UNDEFINED or valtype is NULL or valtype is NAN:
+    elif valtype is UNDEFINED:
       return None
+    elif valtype is NULL:
+      return Null();
     elif valtype is TRUE:
       return True
     elif valtype is FALSE:
       return False
     elif valtype is DATE:
-      return date.fromtimestamp(self.readValue(self.buffer.readUInt8()))
+      return date.fromtimestamp(self.buffer.readUInt32())
     elif valtype is REGEXP:
       return re.compile(self.readString())
+    elif valtype is NAN:
+      return float("nan");
+    elif valtype is POSITIVE_INFINITY:
+      return float("inf");
+    elif valtype is MINUS_INFINITY:
+      return float("-inf");
+    elif valtype is BUFFER:
+      ret = StringBuffer();
+      length = self.parseValue(self.buffer.readUInt8());
+      i = 0;
+      while i < length:
+        ret.writeUInt8(self.buffer.readUInt8(), i);
+        i += 1
+      return ret
     else:
       raise Exception('Invalid LEON.')
     return ret
@@ -136,6 +154,10 @@ def typeCheck(val):
     return VARARRAY
   if type(val) is datetime.date:
     return DATE
+  if val.__class__.__name__ is 'Null':
+    return NULL
+  if type(val) is StringBuffer:
+    return BUFFER
   if type(val) is type(reg):
     return REGEXP
   if type(val) is bool:
@@ -160,6 +182,13 @@ def typeCheck(val):
       return INT
     return DOUBLE
   if type(val) is float:
+    if math.isinf(val):
+      if val > 0:
+        return POSITIVE_INFINITY
+      else:
+        return MINUS_INFINITY
+    if math.isnan(val):
+      return NAN
     val = abs(val)
     log = math.log(val)/math.log(2)
     if log < -128 or log > 127:
@@ -229,7 +258,7 @@ class Encoder():
     typeByte.writeUInt8(valtype, 0)
     if not implicit:
       self.append(typeByte)
-    if valtype is UNDEFINED or valtype is TRUE or valtype is FALSE or valtype is NULL or valtype is NAN:
+    if valtype is UNDEFINED or valtype is TRUE or valtype is FALSE or valtype is NULL or valtype is NAN or valtype is POSITIVE_INFINITY or valtype is MINUS_INFINITY:
       return 1
     if valtype is STRING:
       if len(self.stringIndex) is 0:

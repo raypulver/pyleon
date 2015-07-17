@@ -1,4 +1,5 @@
 from io import Parser, Encoder
+from null import Null
 
 def dumps(obj):
   return Encoder(obj).writeSI().writeOLI().writeData().export()
